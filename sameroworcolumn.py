@@ -4,30 +4,33 @@
 
 import itertools
 
-def checkperm(perm, shape):
-    #checks if a permutation is valid
-    (n,m) = shape
+
+def check_permutation(perm, shape):
+    # checks if a permutation is valid
+    (n, m) = shape
     for i in range(n*m):
-        flag=0
+        flag = 0
         for jn in range(m):
-            if (i == perm[i%n + jn*n]): #column
+            if (i == perm[i % n + jn*n]):  # column
                 flag = 1
         for jm in range(n):
-            if (i == perm[(i//n)*n + jm]): #row
+            if (i == perm[(i//n)*n + jm]):  # row
                 flag = 1
-        if flag==0:
+        if flag == 0:
             return False
     return True
 
-def countall(shape):
+
+def count_all_permutations(shape):
     # count all valid permutations with given shape
-    (n,m)=shape
+    (n, m) = shape
     perm = itertools.permutations(range(n*m), n*m)
     cnt = 0
     for i in perm:
-        if (checkperm(i, shape)==True):
-            cnt+=1
+        if (check_permutation(i, shape) == True):
+            cnt += 1
     return cnt
 
-sh = (3,3) #replace with other matrix shape, if you wish
-print(countall(sh))
+
+shape = (3, 3)  # replace with other matrix shape, if you wish
+print(count_all_permutations(shape))
