@@ -1,45 +1,51 @@
 import wx
 
-x=1
-y=2
-z=3
-xx=1
-yy=2
-zz=3
+x = 1
+y = 2
+z = 3
+xx = 1
+yy = 2
+zz = 3
 
-def flip(a,b):
+
+def flip(a, b):
     return 2*b-a, b
+
 
 def xy(event):
     global x
     global y
     global z
-    x,y = flip(x,y)
+    x, y = flip(x, y)
     global xx
     global yy
     global zz
-    yy,xx = flip(yy,xx)
+    yy, xx = flip(yy, xx)
     global text1
     global text2
     label1 = "(" + str(x) + " ; " + str(y) + " ; " + str(z) + ")"
     label2 = "(" + str(xx) + " ; " + str(yy) + " ; " + str(zz) + ")"
     text1.SetLabel(label1)
     text2.SetLabel(label2)
+
+
 def yx(event):
     global x
     global y
     global z
-    y,x = flip(y,x)
+    y, x = flip(y, x)
     global xx
     global yy
     global zz
-    xx,yy = flip(xx,yy)
+    xx, yy = flip(xx, yy)
     global text1
     global text2
     label1 = "(" + str(x) + " ; " + str(y) + " ; " + str(z) + ")"
     label2 = "(" + str(xx) + " ; " + str(yy) + " ; " + str(zz) + ")"
     text1.SetLabel(label1)
     text2.SetLabel(label2)
+
+
 def yz(event):
     global x
     global y
@@ -55,6 +61,8 @@ def yz(event):
     label2 = "(" + str(xx) + " ; " + str(yy) + " ; " + str(zz) + ")"
     text1.SetLabel(label1)
     text2.SetLabel(label2)
+
+
 def zy(event):
     global x
     global y
@@ -63,13 +71,15 @@ def zy(event):
     global xx
     global yy
     global zz
-    yy,zz = flip(yy,zz)
+    yy, zz = flip(yy, zz)
     global text1
     global text2
     label1 = "(" + str(x) + " ; " + str(y) + " ; " + str(z) + ")"
     label2 = "(" + str(xx) + " ; " + str(yy) + " ; " + str(zz) + ")"
     text1.SetLabel(label1)
     text2.SetLabel(label2)
+
+
 def xz(event):
     global x
     global y
@@ -85,15 +95,17 @@ def xz(event):
     label2 = "(" + str(xx) + " ; " + str(yy) + " ; " + str(zz) + ")"
     text1.SetLabel(label1)
     text2.SetLabel(label2)
+
+
 def zx(event):
     global x
     global y
     global z
-    z,x = flip(z,x)
+    z, x = flip(z, x)
     global xx
     global yy
     global zz
-    xx,zz = flip(xx,zz)
+    xx, zz = flip(xx, zz)
     global text1
     global text2
     label1 = "(" + str(x) + " ; " + str(y) + " ; " + str(z) + ")"
@@ -101,9 +113,10 @@ def zx(event):
     text1.SetLabel(label1)
     text2.SetLabel(label2)
 
+
 app = wx.App()
 frame = wx.Frame(None, -1, 'Kuznetchiks')
-frame.SetDimensions(0,0,800,600)
+frame.SetDimensions(0, 0, 800, 600)
 
 panel = wx.Panel(frame, wx.ID_ANY)
 buttonxy = wx.Button(panel, wx.ID_ANY, 'xy', (10, 10))
@@ -124,12 +137,11 @@ buttonzx.Bind(wx.EVT_BUTTON, zx)
 label1 = "(" + str(x)+" ; "+str(y) + " ; " + str(z) + ")"
 label2 = "(" + str(xx)+" ; "+str(yy) + " ; " + str(zz) + ")"
 
-text1 = wx.StaticText(panel, id=wx.ID_ANY, label=label1, pos=(10,70))
-text2 = wx.StaticText(panel, id=wx.ID_ANY, label=label2, pos=(10,100))
+text1 = wx.StaticText(panel, id=wx.ID_ANY, label=label1, pos=(10, 70))
+text2 = wx.StaticText(panel, id=wx.ID_ANY, label=label2, pos=(10, 100))
 
 
 frame.Show(True)
-#frame.Maximize()
+# frame.Maximize()
 
 app.MainLoop()
-
