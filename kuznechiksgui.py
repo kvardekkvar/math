@@ -65,8 +65,8 @@ class HoppersView():
                     x_coordinate = 150 * (len(self.buttons) // 2) + 10
                     
                     
-                    button = FlipButton(panel, id = wx.ID_ANY, label = f"{source} jumps over {destination}", pos = (x_coordinate, 10), source=source, destination=destination)
-                    button_reverse = FlipButton(panel, id = wx.ID_ANY, label = f"{destination} jumps over {source}", pos = (x_coordinate, 40), source=destination, destination=source)
+                    button = FlipButton(panel, id = wx.ID_ANY, label = f"{source + 1} jumps over {destination + 1}", pos = (x_coordinate, 10), source=source, destination=destination)
+                    button_reverse = FlipButton(panel, id = wx.ID_ANY, label = f"{destination + 1} jumps over {source + 1}", pos = (x_coordinate, 40), source=destination, destination=source)
 
                     self.buttons.append(button)
                     self.buttons.append(button_reverse)
