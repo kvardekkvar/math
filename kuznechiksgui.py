@@ -1,7 +1,7 @@
 import wx
 
 # 3 grasshoppers and 3 anti-grasshoppers live in points 0, 1, 2 on the real line. On each move, grasshopper i jumps over grasshopper j, whereas anti-grasshopper j jumps over anti-grasshopper i. Below is GUI application to follow the history of the grasshoppers.
-
+NUMBER_OF_HOPPERS = 3
 
 class Hopper():
     def __init__(self, coordinate):
@@ -33,6 +33,13 @@ class HoppersModel():
     def flip(a, b):
         return 2 * b - a, b
 
+
+class FlipButton(wx.Button):
+    def __init__(self, parent, source = None, destination = None, *args, **kwargs):
+        self.source = source
+        self.destination = destination
+        super().__init__(parent, *args, **kwargs)
+
 class HoppersView():
     
     
@@ -49,12 +56,29 @@ class HoppersView():
         self.text_hoppers = wx.StaticText(panel, id=wx.ID_ANY, label="", pos=(10, 70))
         self.text_shadows = wx.StaticText(panel, id=wx.ID_ANY, label="", pos=(10, 100))
         
-        self.buttonxy = wx.Button(panel, wx.ID_ANY, 'x over y', (10, 10))
-        self.buttonyx = wx.Button(panel, wx.ID_ANY, 'y over x', (10, 40))
-        self.buttonyz = wx.Button(panel, wx.ID_ANY, 'y over z', (100, 10))
-        self.buttonzy = wx.Button(panel, wx.ID_ANY, 'z over y', (100, 40))
-        self.buttonxz = wx.Button(panel, wx.ID_ANY, 'x over z', (200, 10))
-        self.buttonzx = wx.Button(panel, wx.ID_ANY, 'z over x', (200, 40))
+        self.buttons = []
+        for destination in range(NUMBER_OF_HOPPERS):
+            for source in range(NUMBER_OF_HOPPERS):
+                if destination <= source:
+                    continue
+                else:
+                    x_coordinate = 150 * (len(self.buttons) // 2) + 10
+                    
+                    
+                    button = FlipButton(panel, id = wx.ID_ANY, label = f"{source} jumps over {destination}", pos = (x_coordinate, 10), source=source, destination=destination)
+                    button_reverse = FlipButton(panel, id = wx.ID_ANY, label = f"{destination} jumps over {source}", pos = (x_coordinate, 40), source=destination, destination=source)
+
+                    self.buttons.append(button)
+                    self.buttons.append(button_reverse)
+                                    
+                '''
+                        self.buttonxy = wx.Button(panel, wx.ID_ANY, 'x over y', (10, 10))
+                        self.buttonyx = wx.Button(panel, wx.ID_ANY, 'y over x', (10, 40))
+                        self.buttonyz = wx.Button(panel, wx.ID_ANY, 'y over z', (100, 10))
+                        self.buttonzy = wx.Button(panel, wx.ID_ANY, 'z over y', (100, 40))
+                        self.buttonxz = wx.Button(panel, wx.ID_ANY, 'x over z', (200, 10))
+                        self.buttonzx = wx.Button(panel, wx.ID_ANY, 'z over x', (200, 40))
+                '''
 
     def update_labels(self):
         hopper_pairs = self.model.hoppers_list
@@ -70,37 +94,43 @@ class Controller():
         self.view = HoppersView()
         self.model = self.view.model
 
-    def flip_hoppers(self, i: int, j: int):
+    def flip_hoppers(self, hopper_pair1 : HopperPair, hopper_pair2 : HopperPair, is_shadow : bool = False):
+        if not is_shadow:
+            hopper1 = hopper_pair1.hopper
+            hopper2 = hopper_pair2.hopper 
+        else: 
+            hopper1 = hopper_pair1.shadow
+            hopper2 = hopper_pair2.shadow
+                  
+        coordinate1 = hopper1.get_coordinate()
+        coordinate2 = hopper2.get_coordinate()        
+
+        if not is_shadow:
+            coordinate1, coordinate2 = HoppersModel.flip(coordinate1, coordinate2)
+        else:
+            coordinate2, coordinate1 = HoppersModel.flip(coordinate2, coordinate1)
+
+        hopper1.set_coordinate(coordinate1)
+        hopper2.set_coordinate(coordinate2)
+            
+
+    def flip_ij(self, i: int, j: int):
         assert i != j
         
         model = self.model
         view = self.view
         
-        hopper_connection_1 = model.hoppers_list[i]
-        hopper_connection_2 = model.hoppers_list[j]
+        hopper_pair_1 = model.hoppers_list[i]
+        hopper_pair_2 = model.hoppers_list[j]
         
-        hopper1_coordinate = hopper_connection_1.hopper.get_coordinate()
-        hopper2_coordinate = hopper_connection_2.hopper.get_coordinate()
+        self.flip_hoppers(hopper_pair_1, hopper_pair_2, True)
+        self.flip_hoppers(hopper_pair_1, hopper_pair_2, False)
         
-        hopper1_coordinate, hopper2_coordinate = HoppersModel.flip(hopper1_coordinate, hopper2_coordinate)
-        
-        hopper_connection_1.hopper.set_coordinate(hopper1_coordinate)
-        hopper_connection_2.hopper.set_coordinate(hopper2_coordinate)
-
-        
-        shadow1_coordinate = hopper_connection_1.shadow.get_coordinate()
-        shadow2_coordinate = hopper_connection_2.shadow.get_coordinate()        
-
-        shadow2_coordinate, shadow1_coordinate = HoppersModel.flip(shadow2_coordinate, shadow1_coordinate)
-        
-        hopper_connection_1.shadow.set_coordinate(shadow1_coordinate)
-        hopper_connection_2.shadow.set_coordinate(shadow2_coordinate)
-
         view.update_labels()
 
     def fill_hoppers_list(self):
         hoppers = self.model
-        for i in range(3):
+        for i in range(NUMBER_OF_HOPPERS):
             hopper = RealHopper(i)
             shadow = ShadowHopper(i)
             pair = HopperPair(hopper, shadow)
@@ -110,12 +140,20 @@ class Controller():
     def bind_buttons(self):
         view = self.view
         
-        view.buttonxy.Bind(wx.EVT_BUTTON, lambda t: self.flip_hoppers(0,1))
-        view.buttonyx.Bind(wx.EVT_BUTTON, lambda t: self.flip_hoppers(1,0))
-        view.buttonzy.Bind(wx.EVT_BUTTON, lambda t: self.flip_hoppers(2,1))
-        view.buttonzx.Bind(wx.EVT_BUTTON, lambda t: self.flip_hoppers(2,0))
-        view.buttonyz.Bind(wx.EVT_BUTTON, lambda t: self.flip_hoppers(1,2))
-        view.buttonxz.Bind(wx.EVT_BUTTON, lambda t: self.flip_hoppers(0,2))
+        '''
+        #Not sure why this doesn't work
+        
+        for button in view.buttons:
+                button : wx.Button = button
+                button.Bind(wx.EVT_BUTTON, lambda t: self.flip_ij(button.source, button.destination))
+        '''
+
+        view.buttons[0].Bind(wx.EVT_BUTTON, lambda t: self.flip_ij(view.buttons[0].source, view.buttons[0].destination))
+        view.buttons[1].Bind(wx.EVT_BUTTON, lambda t: self.flip_ij(view.buttons[1].source, view.buttons[1].destination))
+        view.buttons[2].Bind(wx.EVT_BUTTON, lambda t: self.flip_ij(view.buttons[2].source, view.buttons[2].destination))
+        view.buttons[3].Bind(wx.EVT_BUTTON, lambda t: self.flip_ij(view.buttons[3].source, view.buttons[3].destination))
+        view.buttons[4].Bind(wx.EVT_BUTTON, lambda t: self.flip_ij(view.buttons[4].source, view.buttons[4].destination))
+        view.buttons[5].Bind(wx.EVT_BUTTON, lambda t: self.flip_ij(view.buttons[5].source, view.buttons[5].destination))
 
     def run(self):
         model = self.model
