@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# the program counts nxm table permutations such that each element is in the same row or column
-
 import itertools
 
 
