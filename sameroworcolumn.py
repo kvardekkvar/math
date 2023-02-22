@@ -5,16 +5,16 @@
 import itertools
 
 
-def check_permutation(perm, shape):
+def check_permutation(permutation, shape):
     # checks if a permutation is valid
-    (n, m) = shape
-    for i in range(n*m):
+    (rows, columns) = shape
+    for cell in range(rows*columns):
         flag = 0
-        for jn in range(m):
-            if (i == perm[i % n + jn*n]):  # column
+        for column in range(columns):
+            if (cell == permutation[cell % rows + column * rows]):
                 flag = 1
-        for jm in range(n):
-            if (i == perm[(i//n)*n + jm]):  # row
+        for row in range(rows):
+            if (cell == permutation[(cell // rows) * rows + row]):
                 flag = 1
         if flag == 0:
             return False
@@ -23,13 +23,13 @@ def check_permutation(perm, shape):
 
 def count_all_permutations(shape):
     # count all valid permutations with given shape
-    (n, m) = shape
-    perm = itertools.permutations(range(n*m), n*m)
-    cnt = 0
-    for i in perm:
-        if (check_permutation(i, shape) == True):
-            cnt += 1
-    return cnt
+    (rows, columns) = shape
+    permutations = itertools.permutations(range(rows * columns), rows * columns)
+    counter = 0
+    for permutation in permutations:
+        if (check_permutation(permutation, shape) == True):
+            counter += 1
+    return counter
 
 
 shape = (3, 3)  # replace with other matrix shape, if you wish
